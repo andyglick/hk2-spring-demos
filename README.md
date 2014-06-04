@@ -7,7 +7,7 @@ Jersey 2.0 was released it seemed as if the way that HK2 had been implemented in
 DI container had made a mess of the Jersey 1.X Spring integration. The issues were so bad that they
 postponed upgrading to Jersey 2.X.
 
-In the mean time I chaged jobs and became interested in CDI, and have been looking at some CDI
+In the mean time I changed jobs and became interested in CDI, and have been looking at some CDI
 implementations, and I have done some experiments with DeltaSpike.
 
 I decided that it might be a good time to try HK2,
