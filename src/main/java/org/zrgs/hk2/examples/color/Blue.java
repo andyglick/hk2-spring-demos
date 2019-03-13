@@ -1,7 +1,5 @@
 package org.zrgs.hk2.examples.color;
 
-import org.jvnet.hk2.config.Changed;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

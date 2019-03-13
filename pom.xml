@@ -1,5 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+  http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.zrgs.hk2.examples</groupId>
@@ -19,37 +22,65 @@
   </repositories>
 
   <prerequisites>
-    <maven>3.2.1</maven>
+    <maven>${maven.version}</maven>
   </prerequisites>
 
   <properties>
-    <dependency.plugin.version>2.8</dependency.plugin.version>
-    <help.plugin.version>2.2</help.plugin.version>
-    <hk2.version>2.3.0-b05</hk2.version>
+    <dependency.plugin.version>3.1.1</dependency.plugin.version>
+    <help.plugin.version>3.1.1</help.plugin.version>
+    <hk2.version>2.5.0</hk2.version>
+    <java.version>1.8</java.version>
+    <logback.version>1.3.0-alpha4</logback.version>
     <maven.compiler.verbose>true</maven.compiler.verbose>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.version>3.6.0</maven.version>
+    <openclover.version>4.3.1</openclover.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <slf4j.version>1.7.7</slf4j.version>
-    <spring.version>4.0.5.RELEASE</spring.version>
+    <slf4j.version>1.8.0-beta4</slf4j.version>
+    <spring.version>5.1.5.RELEASE</spring.version>
     <surefire.reportFormat>plain</surefire.reportFormat>
     <surefire.useFile>false</surefire.useFile>
-    <surefire.version>2.17</surefire.version>
-    <versions.plugin.version>2.2-alg</versions.plugin.version>
+    <surefire.version>3.0.0-M3</surefire.version>
+    <versions.plugin.version>2.7</versions.plugin.version>
   </properties>
 
   <build>
     <pluginManagement>
       <plugins>
         <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+        <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.1</version>
+          <version>3.8.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.6</version>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.17</version>
+          <version>${surefire.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -57,7 +88,7 @@
       <plugin>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-inhabitant-generator</artifactId>
-        <version>${hk2.version}</version>
+        <version>2.5.0-b57</version>
         <executions>
           <execution>
             <goals>
@@ -68,11 +99,41 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M1</version>
+        <executions>
+          <execution>
+            <id>enforce-dependency-convergence</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <rules>
+            <bannedDependencies>
+              <excludes>
+                <!-- use slf4j -->
+                <exclude>commons-logging</exclude>
+                <exclude>log4j</exclude>
+                <exclude>log4j:log4j</exclude>
+                <!-- use org.jdom -->
+                <exclude>jdom:jdom</exclude>
+                <!-- use commons-io:commons-io -->
+                <exclude>org.apache.commons:commons-io</exclude>
+              </excludes>
+              <searchTransitive>true</searchTransitive>
+            </bannedDependencies>
+            <DependencyConvergence/>
+          </rules>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>${dependency.plugin.version}</version>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-help-plugin</artifactId>
         <version>${help.plugin.version}</version>
       </plugin>
@@ -86,18 +147,59 @@
 
   <profiles>
     <profile>
+      <id>simple-logging</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>verbose-logging</id>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
       <dependencies>
         <dependency>
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
-          <version>1.1.2</version>
         </dependency>
       </dependencies>
     </profile>
   </profiles>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.openclover</groupId>
+      <artifactId>clover</artifactId>
+      <version>${openclover.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>systems.manifold</groupId>
+      <artifactId>manifold-all</artifactId>
+      <version>0.48-alpha</version>
+    </dependency>
+
     <dependency>
       <groupId>org.glassfish.hk2</groupId>
       <artifactId>spring-bridge</artifactId>
@@ -130,7 +232,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>17.0</version>
+      <version>27.1-jre</version>
     </dependency>
 
     <dependency>
@@ -163,13 +265,13 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>1.6.1</version>
+      <version>3.12.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.13-beta-2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
